@@ -5,38 +5,51 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        {% if site.organization-logo-nav %}<span class="d-lg-none text-end">
+        {% if site.organization-logo-nav %}
+        <span class="d-lg-none text-end">
             <a href="{{ site.organization-link }}">
                 <img class="img-fluid" src="{{ site.organization-logo-nav | relative_url }}" alt="{{ site.organization-name | escape }}">
             </a>
-        </span>{% endif %}
+        </span>
+        {% endif %}
         
         <div class="collapse navbar-collapse" id="page-nav">
             <ul class="navbar-nav me-auto">
                 {% for item in site.data.config-nav %}
-                {% if item.display_name %}
-                {% assign parent = item.dropdown_parent %}
-                {% if parent == nil or parent == "" %}
-                {% if item.stub %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ item.stub | relative_url }}">{{ item.display_name }}</a>
-                </li>
-                {% else %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ item.display_name }}</a>
-                    <div class="dropdown-menu">
-                        {% for child in site.data.config-nav %}
-                        {% if child.dropdown_parent == item.display_name %}
-                        <a class="dropdown-item" href="{{ child.stub | relative_url }}">{{ child.display_name }}</a>
+                    {% if item.display_name %}
+                        {% assign parent = item.dropdown_parent %}
+                        {% if parent == nil %}
+                            {% assign no_parent = true %}
+                        {% elsif parent == "" %}
+                            {% assign no_parent = true %}
+                        {% else %}
+                            {% assign no_parent = false %}
                         {% endif %}
-                        {% endfor %}
-                    </div>
-                </li>
-                {% endif %}
-                {% endif %}
-                {% endif %}
+
+                        {% if no_parent %}
+                            {% if item.stub %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ item.stub | relative_url }}">{{ item.display_name }}</a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ item.display_name }}</a>
+                                    <div class="dropdown-menu">
+                                        {% for child in site.data.config-nav %}
+                                            {% assign child_parent = child.dropdown_parent %}
+                                            {% assign item_name = item.display_name %}
+                                            {% if child_parent == item_name %}
+                                                <a class="dropdown-item" href="{{ child.stub | relative_url }}">{{ child.display_name }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
                 {% endfor %}
             </ul>
+
             {% include nav-search-lunr.html %}
         </div>
     </div>
