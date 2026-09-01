@@ -17,22 +17,22 @@
 
         {% if site.organization-logo-nav %}<span class="d-lg-none text-end">
             <a href="{{ site.organization-link }}">
-                <img class="img-fluid" id="mobile-nav-image" src="{{ site.organization-logo-nav | relative_url }}" title="{{ site.organization-name }}" alt="{{ site.organization-name | escape }}">
+                <img class="img-fluid" src="{{ site.organization-logo-nav | relative_url }}" title="{{ site.organization-name }}" alt="{{ site.organization-name | escape }}">
             </a>
         </span>{% endif %}
         
         <div class="collapse navbar-collapse" id="page-nav">
             <ul class="navbar-nav me-auto">
-                {%- for item in site.data.config-nav -%}
-                  {%- if item.display_name and item.dropdown_parent == "" -%}
-                    {%- if item.stub -%}
+                {% for item in site.data.config-nav %}
+                  {% if item.display_name and item.dropdown_parent == "" %}
+                    {% if item.stub %}
                     <li class="nav-item">
                         <a class="nav-link{% if page.url == item.stub %} active{% endif %}" {% if page.url == item.stub %}aria-current="page" {% endif %}href="{{ item.stub | relative_url }}">{{ item.display_name }}</a>
                     </li>
-                    {%- else -%}
+                    {% else %}
                     <li class="nav-item dropdown">
-                        {%- assign childItems = site.data.config-nav | where: "dropdown_parent", item.display_name -%}
-                        {%- assign childStubs = childItems | map: "stub" -%}
+                        {% assign childItems = site.data.config-nav | where: "dropdown_parent", item.display_name %}
+                        {% assign childStubs = childItems | map: "stub" %}
                         <a class="nav-link dropdown-toggle{% if childStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ item.display_name }}</a>
                         <div class="dropdown-menu">
                             {% for child in childItems %}
@@ -40,9 +40,9 @@
                             {% endfor %}
                         </div>
                     </li>
-                    {%- endif -%}
-                  {%- endif -%}
-                {%- endfor -%}
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
             </ul>
             
             {% include nav-search-lunr.html %}
