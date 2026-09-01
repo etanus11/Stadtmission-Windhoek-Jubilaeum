@@ -1,14 +1,4 @@
-{% comment %}
-
-    Collection Navbar.
-
-    Creates a basic nav menu using Bootstrap navbar component, https://getbootstrap.com/docs/5.3/components/navbar/
-    
-    Configured used "_data/config-nav.csv".
-    Typically added to the "_layout/default.html".
-    The color theme options can be set in "theme.yml"
-
-{%- endcomment -%}
+{% comment %}Collection Navbar{% endcomment %}
 <nav class="navbar navbar-expand-lg {{ site.data.theme.navbar-background | default: 'bg-black' }}" data-bs-theme="{{ site.data.theme.navbar-color | default: 'dark' }}">
     <div class="container">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#page-nav" aria-controls="page-nav" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,36 +7,37 @@
 
         {% if site.organization-logo-nav %}<span class="d-lg-none text-end">
             <a href="{{ site.organization-link }}">
-                <img class="img-fluid" src="{{ site.organization-logo-nav | relative_url }}" title="{{ site.organization-name }}" alt="{{ site.organization-name | escape }}">
+                <img class="img-fluid" src="{{ site.organization-logo-nav | relative_url }}" alt="{{ site.organization-name | escape }}">
             </a>
         </span>{% endif %}
         
         <div class="collapse navbar-collapse" id="page-nav">
             <ul class="navbar-nav me-auto">
                 {% for item in site.data.config-nav %}
-                  {% if item.display_name and item.dropdown_parent == "" %}
-                    {% if item.stub %}
-                    <li class="nav-item">
-                        <a class="nav-link{% if page.url == item.stub %} active{% endif %}" {% if page.url == item.stub %}aria-current="page" {% endif %}href="{{ item.stub | relative_url }}">{{ item.display_name }}</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item dropdown">
-                        {% assign childItems = site.data.config-nav | where: "dropdown_parent", item.display_name %}
-                        {% assign childStubs = childItems | map: "stub" %}
-                        <a class="nav-link dropdown-toggle{% if childStubs contains page.url %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ item.display_name }}</a>
-                        <div class="dropdown-menu">
-                            {% for child in childItems %}
-                            <a class="dropdown-item {% if page.url == child.stub %}active{% endif %}" {% if page.url == child.stub %}aria-current="page" {% endif %}href="{{ child.stub | relative_url }}">{{ child.display_name }}</a>
-                            {% endfor %}
-                        </div>
-                    </li>
-                    {% endif %}
-                  {% endif %}
+                {% if item.display_name %}
+                {% assign parent = item.dropdown_parent %}
+                {% if parent == nil or parent == "" %}
+                {% if item.stub %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ item.stub | relative_url }}">{{ item.display_name }}</a>
+                </li>
+                {% else %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{{ item.display_name }}</a>
+                    <div class="dropdown-menu">
+                        {% for child in site.data.config-nav %}
+                        {% if child.dropdown_parent == item.display_name %}
+                        <a class="dropdown-item" href="{{ child.stub | relative_url }}">{{ child.display_name }}</a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% endif %}
                 {% endfor %}
             </ul>
-            
             {% include nav-search-lunr.html %}
-            
         </div>
     </div>
 </nav>
